@@ -4,7 +4,7 @@ import PrivacyPolicy from './PrivacyPolicy';
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/GrowNex11">
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
