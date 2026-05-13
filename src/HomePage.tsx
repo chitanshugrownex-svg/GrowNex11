@@ -4,6 +4,12 @@ import { ArrowRight, ArrowLeft, MessageSquare, Phone, Mail, MapPin, X, Instagram
 import { Link } from 'react-router-dom';
 import { GrowNexLogo } from './components/GrowNexLogo';
 
+const getAssetURL = (path: string) => {
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const base = import.meta.env.BASE_URL || '/';
+  return base + path.replace(/^\//, '');
+};
+
 export default function HomePage() {
   const [activeAboutSlide, setActiveAboutSlide] = useState(0);
   const [selectedService, setSelectedService] = useState<{ id: number; label: string; icon: string; img: string; details: string; features: string[]; } | null>(null);
@@ -197,7 +203,7 @@ export default function HomePage() {
               className="inline-flex items-center justify-center w-full mb-6"
             >
               <img 
-                src="/Grow_Nex_Logo.png" 
+                src={getAssetURL("/Grow_Nex_Logo.png")} 
                 alt="GrowNex Logo" 
                 className="h-28 md:h-40 object-contain transition-all duration-300 hover:scale-110 hover:-translate-y-2 hover:drop-shadow-[0_0_20px_rgba(242,101,34,0.4)] cursor-pointer" 
                 onError={(e) => {
@@ -238,7 +244,7 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
-              src="/hero-statue.png" 
+              src={getAssetURL("/hero-statue.png")} 
               alt="Statue holding lightbulb concept" 
               className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl object-contain origin-bottom transform md:scale-110 lg:scale-125 mix-blend-lighten mask-image-gradient"
               style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)' }}
@@ -268,7 +274,7 @@ export default function HomePage() {
               ].map(partner => (
                 <div key={`${i}-${partner.id}`} className="relative flex items-center justify-center w-[120px] md:w-[160px] lg:w-[180px] shrink-0 mx-4 md:mx-8 text-center">
                   <img 
-                    src={partner.src} 
+                    src={getAssetURL(partner.src)} 
                     alt={partner.alt} 
                     className={`${partner.className} object-contain`} 
                     onError={(e) => {
@@ -309,7 +315,7 @@ export default function HomePage() {
                  animate={{ opacity: 1, scale: 1 }}
                  exit={{ opacity: 0 }}
                  transition={{ duration: 0.3 }}
-                 src={currentAboutSlide.image} 
+                 src={getAssetURL(currentAboutSlide.image)} 
                  alt={currentAboutSlide.title} 
                  className="w-full h-full object-cover absolute inset-0"
                />
@@ -338,7 +344,7 @@ export default function HomePage() {
                 className="bg-brand-black rounded-2xl overflow-hidden shadow-2xl border border-white/5 flex flex-col cursor-pointer"
               >
                 <div className="flex-1 w-full bg-zinc-900 relative">
-                  <img src={service.img} alt={service.label} className="w-full h-64 md:h-80 object-cover opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-300" />
+                  <img src={getAssetURL(service.img)} alt={service.label} className="w-full h-64 md:h-80 object-cover opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-300" />
                 </div>
                 <div className="bg-brand-black p-4 text-center border-t border-white/10">
                   <h4 className="text-brand-orange font-bold text-[15px]">{service.label}</h4>
@@ -410,7 +416,7 @@ export default function HomePage() {
                 className={`rounded-xl overflow-hidden shadow-xl cursor-pointer border transition-colors duration-300 ${isExpanded ? 'bg-zinc-900 border-white/10 text-white' : 'bg-white border-gray-100 text-black'}`}
               >
                 <motion.div layout className="h-64 overflow-hidden relative">
-                  <img src={offer.img} alt={offer.title} className="w-full h-full object-cover" />
+                  <img src={getAssetURL(offer.img)} alt={offer.title} className="w-full h-full object-cover" />
                   {isExpanded && <div className="absolute inset-0 bg-black/40" />}
                 </motion.div>
                 <motion.div layout className={`p-6 flex flex-col justify-center min-h-[100px] relative ${isExpanded ? 'text-left' : 'text-center'}`}>
@@ -519,7 +525,7 @@ export default function HomePage() {
             ].map(client => (
               <div key={client.id} className="flex-shrink-0 w-[85vw] md:w-[400px] snap-center flex flex-col bg-brand-black/20 rounded-3xl p-8 border border-white/10">
                 <div className="flex items-center gap-4 mb-6">
-                  <img src={client.img} alt={client.name} className="w-16 h-16 rounded-full border-2 border-white object-cover" />
+                  <img src={getAssetURL(client.img)} alt={client.name} className="w-16 h-16 rounded-full border-2 border-white object-cover" />
                   <div>
                     <h5 className="font-bold text-white text-lg">{client.name}</h5>
                     <p className="text-white/80 text-sm">{client.company}</p>
@@ -663,7 +669,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 md:px-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img 
-              src="/Grow_Nex_Logo.png" 
+              src={getAssetURL("/Grow_Nex_Logo.png")} 
               alt="GrowNex Logo" 
               className="h-16 md:h-24 object-contain transition-transform duration-300 hover:scale-105" 
             />
