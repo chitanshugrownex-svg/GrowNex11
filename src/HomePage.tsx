@@ -191,16 +191,39 @@ export default function HomePage() {
     <div className="min-h-screen bg-brand-black text-white font-sans overflow-x-hidden">
       {/* Header / Hero */}
       <header className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden">
+        {/* Tablet strictly top-center logo */}
+        <div className="hidden md:flex lg:hidden absolute top-8 left-0 w-full justify-center z-30">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="inline-flex items-center justify-center"
+          >
+            <img 
+              src={getAssetURL("/Grow_Nex_Logo.png")} 
+              alt="GrowNex Logo" 
+              className="h-28 md:h-36 object-contain transition-all duration-300 hover:scale-110 hover:-translate-y-2 hover:drop-shadow-[0_0_20px_rgba(242,101,34,0.4)] cursor-pointer" 
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement?.querySelector('.fallback-text')?.classList.remove('hidden');
+              }}
+            />
+            <h1 className="fallback-text hidden text-4xl font-heading font-bold tracking-tight">
+              <span className="text-white">Grow</span><span className="text-brand-orange">Nex</span>
+            </h1>
+          </motion.div>
+        </div>
+
         {/* Background ambient gradient */}
         <div className="absolute top-0 right-0 w-full md:w-2/3 h-full bg-gradient-to-l from-brand-orange/20 to-transparent z-0 blur-3xl pointer-events-none" />
 
-        <div className="container mx-auto px-6 md:px-16 flex flex-col md:flex-row items-center relative z-10">
-          <div className="w-full md:w-1/2 flex flex-col items-center text-center z-20 pt-20 md:pt-0">
+        <div className="container mx-auto px-6 md:px-16 flex flex-col lg:flex-row items-center relative z-10 pt-20 md:pt-40 lg:pt-0">
+          <div className="w-full lg:w-1/2 flex flex-col items-center text-center z-20">
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="inline-flex items-center justify-center w-full mb-6"
+              className="flex md:hidden lg:flex items-center justify-center w-full mb-6"
             >
               <img 
                 src={getAssetURL("/Grow_Nex_Logo.png")} 
@@ -238,7 +261,7 @@ export default function HomePage() {
             </motion.a>
           </div>
 
-          <div className="w-full md:w-1/2 mt-12 md:mt-0 relative flex justify-center">
+          <div className="w-full lg:w-1/2 mt-12 lg:mt-0 relative flex justify-center">
             {/* Hero Statue uploaded by user */}
             <motion.img 
               initial={{ opacity: 0, scale: 0.9 }}
@@ -246,7 +269,7 @@ export default function HomePage() {
               transition={{ duration: 1, delay: 0.2 }}
               src={getAssetURL("/hero-statue.png")} 
               alt="Statue holding lightbulb concept" 
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl object-contain origin-bottom transform md:scale-110 lg:scale-125 mix-blend-lighten mask-image-gradient"
+              className="w-full max-w-sm md:max-w-md lg:max-w-3xl object-contain origin-bottom transform lg:scale-125 mix-blend-lighten mask-image-gradient"
               style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)' }}
             />
           </div>
@@ -363,7 +386,7 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-lg bg-zinc-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+              className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl flex flex-col"
             >
               <div className="p-6 md:p-8 flex flex-col gap-4 relative">
                 <button
