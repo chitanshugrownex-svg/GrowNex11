@@ -22,10 +22,10 @@ export default function HomePage() {
     
     const formElement = event.currentTarget;
     
-    // Get Web3Forms access key
-    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "YOUR_ACCESS_KEY_HERE";
-    if (accessKey === "YOUR_WEB3FORMS_ACCESS_KEY" || accessKey === "YOUR_ACCESS_KEY_HERE") {
-        console.warn("Please set VITE_WEB3FORMS_ACCESS_KEY in your .env file to actually receive emails.");
+    // Web3Forms access key (publicly safe to embed in client-side applications)
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "a4e58e0f-6919-4ba6-b2b4-62f107255cd9";
+    if (!accessKey) {
+        console.warn("Please provide a Web3Forms access key.");
     }
     
     const formData = new FormData(formElement);
