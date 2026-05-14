@@ -14,6 +14,51 @@ export default function HomePage() {
   const [activeAboutSlide, setActiveAboutSlide] = useState(0);
   const [selectedService, setSelectedService] = useState<{ id: number; label: string; icon: string; img: string; details: string; features: string[]; } | null>(null);
   const [expandedOfferingId, setExpandedOfferingId] = useState<number | null>(null);
+  const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+
+  const onFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFormStatus("submitting");
+    
+    const formElement = event.currentTarget;
+    
+    // Get Web3Forms access key
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "YOUR_ACCESS_KEY_HERE";
+    if (accessKey === "YOUR_WEB3FORMS_ACCESS_KEY" || accessKey === "YOUR_ACCESS_KEY_HERE") {
+        console.warn("Please set VITE_WEB3FORMS_ACCESS_KEY in your .env file to actually receive emails.");
+    }
+    
+    const formData = new FormData(formElement);
+    formData.append("access_key", accessKey);
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: json
+      });
+      const data = await response.json();
+      if (data.success) {
+        setFormStatus("success");
+        formElement.reset();
+        setTimeout(() => setFormStatus("idle"), 5000);
+      } else {
+        console.error("Web3Forms Error:", data);
+        setFormStatus("error");
+        setTimeout(() => setFormStatus("idle"), 5000);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setFormStatus("error");
+      setTimeout(() => setFormStatus("idle"), 5000);
+    }
+  };
 
   const offeringsData = [
     { 
@@ -629,13 +674,15 @@ export default function HomePage() {
               
               <h4 className="text-2xl font-bold text-white mb-8">Send us a message</h4>
               
-              <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-6 relative z-10" onSubmit={onFormSubmit}>
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium text-gray-400">Full Name</label>
                     <input 
                       type="text" 
                       id="name" 
+                      name="name"
+                      required
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-orange/50 transition-all"
                       placeholder="John Doe"
                     />
@@ -645,6 +692,8 @@ export default function HomePage() {
                     <input 
                       type="email" 
                       id="email" 
+                      name="email"
+                      required
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-orange/50 transition-all"
                       placeholder="john@company.com"
                     />
@@ -655,6 +704,8 @@ export default function HomePage() {
                   <label htmlFor="service" className="text-sm font-medium text-gray-400">Interested Service</label>
                   <select 
                     id="service"
+                    name="service"
+                    required
                     className="w-full bg-zinc-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-orange/50 transition-all appearance-none"
                   >
                     <option value="">Select a service</option>
@@ -670,6 +721,8 @@ export default function HomePage() {
                   <label htmlFor="message" className="text-sm font-medium text-gray-400">Message</label>
                   <textarea 
                     id="message" 
+                    name="message"
+                    required
                     rows={4}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-orange/50 transition-all resize-none"
                     placeholder="Tell us about your business goals..."
@@ -678,10 +731,24 @@ export default function HomePage() {
 
                 <button 
                   type="submit"
-                  className="w-full bg-white text-black hover:bg-gray-200 font-bold py-4 px-8 rounded-xl transition-colors mt-4 flex justify-center items-center gap-2"
+                  disabled={formStatus === 'submitting' || formStatus === 'success'}
+                  className={`w-full font-bold py-4 px-8 rounded-xl transition-colors mt-4 flex justify-center items-center gap-2 ${
+                    formStatus === 'success' 
+                      ? 'bg-green-500 text-white'
+                      : formStatus === 'error'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-white text-black hover:bg-gray-200'
+                  }`}
                 >
-                  Send Message
-                  <MessageSquare size={18} />
+                  {formStatus === 'submitting' && 'Sending...'}
+                  {formStatus === 'success' && 'Message Sent!'}
+                  {formStatus === 'error' && 'Error Sending'}
+                  {formStatus === 'idle' && (
+                    <>
+                      Send Message
+                      <MessageSquare size={18} />
+                    </>
+                  )}
                 </button>
               </form>
             </div>
