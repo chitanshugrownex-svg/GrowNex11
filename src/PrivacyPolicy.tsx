@@ -60,7 +60,7 @@ export default function PrivacyPolicy() {
 
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">7. Contact Us</h2>
           <p>
-            If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at <a href="mailto:chitanshu.grownex@gmail.com" className="text-brand-orange hover:underline">chitanshu.grownex@gmail.com</a>.
+            If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at <a href="mailto:info@grownex.digital" className="text-brand-orange hover:underline">info@grownex.digital</a>.
           </p>
         </div>
       </div>

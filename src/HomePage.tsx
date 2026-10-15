@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ArrowLeft, MessageSquare, Phone, Mail, MapPin, X, Instagram, Linkedin, Facebook } from 'lucide-react';
+import { ArrowRight, ArrowLeft, MessageSquare, Phone, Mail, MapPin, X, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { GrowNexLogo } from './components/GrowNexLogo';
 
@@ -10,11 +10,43 @@ const getAssetURL = (path: string) => {
   return base + path.replace(/^\//, '');
 };
 
+const COUNTRY_CODES = [
+  { code: "+91", label: "🇮🇳 +91 (India)", placeholder: "98765 43210" },
+  { code: "+1", label: "🇺🇸 +1 (USA)", placeholder: "(555) 012-3456" },
+  { code: "+44", label: "🇬🇧 +44 (UK)", placeholder: "7911 123456" },
+  { code: "+971", label: "🇦🇪 +971 (UAE)", placeholder: "50 123 4567" },
+  { code: "+1-CA", label: "🇨🇦 +1 (Canada)", placeholder: "(555) 012-3456" },
+  { code: "+61", label: "🇦🇺 +61 (Australia)", placeholder: "412 345 678" },
+  { code: "+65", label: "🇸🇬 +65 (Singapore)", placeholder: "8123 4567" },
+  { code: "+966", label: "🇸🇦 +966 (Saudi Arabia)", placeholder: "50 123 4567" },
+  { code: "+49", label: "🇩🇪 +49 (Germany)", placeholder: "151 23456789" },
+  { code: "+33", label: "🇫🇷 +33 (France)", placeholder: "6 12 34 56 78" },
+  { code: "+974", label: "🇶🇦 +974 (Qatar)", placeholder: "3312 3456" },
+  { code: "+965", label: "🇰🇼 +965 (Kuwait)", placeholder: "5123 4567" },
+  { code: "+968", label: "🇴🇲 +968 (Oman)", placeholder: "9123 4567" },
+  { code: "+973", label: "🇧🇭 +973 (Bahrain)", placeholder: "3612 3456" },
+  { code: "+64", label: "🇳🇿 +64 (New Zealand)", placeholder: "21 123 4567" },
+  { code: "+31", label: "🇳🇱 +31 (Netherlands)", placeholder: "6 12345678" },
+  { code: "+41", label: "🇨🇭 +41 (Switzerland)", placeholder: "78 123 45 67" },
+  { code: "+39", label: "🇮🇹 +39 (Italy)", placeholder: "312 345 6789" },
+  { code: "+34", label: "🇪🇸 +34 (Spain)", placeholder: "612 34 56 78" },
+  { code: "+60", label: "🇲🇾 +60 (Malaysia)", placeholder: "12-345 6789" },
+  { code: "+27", label: "🇿🇦 +27 (South Africa)", placeholder: "71 123 4567" },
+  { code: "+63", label: "🇵🇭 +63 (Philippines)", placeholder: "912 345 6789" },
+  { code: "+62", label: "🇮🇩 +62 (Indonesia)", placeholder: "812-3456-7890" },
+  { code: "+977", label: "🇳🇵 +977 (Nepal)", placeholder: "981-2345678" },
+  { code: "+880", label: "🇧🇩 +880 (Bangladesh)", placeholder: "1712-345678" },
+  { code: "+94", label: "🇱🇰 +94 (Sri Lanka)", placeholder: "71 234 5678" },
+  { code: "other", label: "🌐 Other / International", placeholder: "+Code Number e.g. +44 7911..." },
+];
+
 export default function HomePage() {
   const [activeAboutSlide, setActiveAboutSlide] = useState(0);
   const [selectedService, setSelectedService] = useState<{ id: number; label: string; icon: string; img: string; details: string; features: string[]; } | null>(null);
   const [expandedOfferingId, setExpandedOfferingId] = useState<number | null>(null);
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [countryCode, setCountryCode] = useState<string>("+91");
+  const [whatsappNumber, setWhatsappNumber] = useState<string>("");
 
   const onFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,6 +62,20 @@ export default function HomePage() {
     
     const formData = new FormData(formElement);
     formData.append("access_key", accessKey);
+
+    // Format WhatsApp number for foreign and domestic numbers
+    const rawWhatsapp = (whatsappNumber || (formData.get("whatsapp") as string) || "").trim();
+    let fullWhatsapp = rawWhatsapp;
+    if (rawWhatsapp) {
+      if (rawWhatsapp.startsWith("+")) {
+        fullWhatsapp = rawWhatsapp;
+      } else if (countryCode && countryCode !== "other") {
+        const cleanCode = countryCode.split("-")[0];
+        fullWhatsapp = `${cleanCode} ${rawWhatsapp}`;
+      }
+      formData.set("whatsapp", fullWhatsapp);
+      formData.set("international_whatsapp", fullWhatsapp);
+    }
 
     const object = Object.fromEntries(formData);
     const json = JSON.stringify(object);
@@ -47,6 +93,8 @@ export default function HomePage() {
       if (data.success) {
         setFormStatus("success");
         formElement.reset();
+        setCountryCode("+91");
+        setWhatsappNumber("");
         setTimeout(() => setFormStatus("idle"), 5000);
       } else {
         console.error("Web3Forms Error:", data);
@@ -294,13 +342,22 @@ export default function HomePage() {
               Driving Your<br /> Brand Digitally
             </motion.h2>
             <motion.a 
-              href="https://forms.gle/NHNcwQ8iENMfsuN49"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#send-message"
+              onClick={(e) => {
+                e.preventDefault();
+                const formSection = document.getElementById("send-message");
+                if (formSection) {
+                  formSection.scrollIntoView({ behavior: "smooth" });
+                  const nameInput = document.getElementById("name");
+                  if (nameInput) {
+                    nameInput.focus();
+                  }
+                }
+              }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="mt-8 inline-block bg-brand-orange hover:bg-orange-600 text-white font-bold py-4 px-10 rounded shadow-lg shadow-brand-orange/30 transition-all uppercase tracking-wider text-sm w-fit"
+              className="mt-8 inline-block bg-brand-orange hover:bg-orange-600 text-white font-bold py-4 px-10 rounded shadow-lg shadow-brand-orange/30 transition-all uppercase tracking-wider text-sm w-fit cursor-pointer"
             >
               Enquire Now
             </motion.a>
@@ -628,7 +685,7 @@ export default function HomePage() {
                  </div>
                  <div>
                    <h4 className="text-white font-bold text-lg mb-1">Our Office</h4>
-                   <p className="text-gray-400 text-sm leading-relaxed">B/15 Krishna Park, Near ITI Gorwa,<br/>Vadodara</p>
+                   <p className="text-gray-400 text-sm leading-relaxed">Vadodara, Gujarat</p>
                  </div>
               </div>
               
@@ -639,7 +696,7 @@ export default function HomePage() {
                    </div>
                    <div className="overflow-hidden">
                      <h4 className="text-white font-bold text-base mb-1">E-mail</h4>
-                     <a href="mailto:chitanshu.grownex@gmail.com" className="text-gray-400 text-sm hover:text-white transition-colors block break-all">chitanshu.grownex@gmail.com</a>
+                     <a href="mailto:info@grownex.digital" className="text-gray-400 text-sm hover:text-white transition-colors block break-all">info@grownex.digital</a>
                    </div>
                 </div>
 
@@ -667,7 +724,7 @@ export default function HomePage() {
           </div>
 
           {/* Right Column: Form */}
-          <div className="w-full lg:w-5/12 relative">
+          <div id="send-message" className="w-full lg:w-5/12 relative scroll-mt-24">
             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-12 relative overflow-hidden h-full">
               {/* Decorative Blur */}
               <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-orange/20 blur-[100px] rounded-full pointer-events-none" />
@@ -697,6 +754,48 @@ export default function HomePage() {
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-orange/50 transition-all"
                       placeholder="john@company.com"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="whatsapp" className="text-sm font-medium text-gray-400">
+                        WhatsApp Number
+                      </label>
+                      <span className="text-xs text-brand-orange/90 font-medium flex items-center gap-1">
+                        <Globe className="w-3 h-3 inline" /> Foreign / International
+                      </span>
+                    </div>
+                    <div className="flex rounded-xl overflow-hidden border border-white/10 bg-white/5 focus-within:ring-2 focus-within:ring-brand-orange/50 focus-within:border-brand-orange transition-all">
+                      <select 
+                        id="country_code"
+                        name="country_code"
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        className="bg-zinc-800 text-white text-xs sm:text-sm px-2.5 sm:px-3 py-3 border-r border-white/10 focus:outline-none cursor-pointer max-w-[125px] sm:max-w-[160px] shrink-0"
+                        title="Select Country Code"
+                      >
+                        {COUNTRY_CODES.map((c) => (
+                          <option key={c.code} value={c.code} className="bg-zinc-900 text-white">
+                            {c.label}
+                          </option>
+                        ))}
+                      </select>
+                      <input 
+                        type="tel" 
+                        id="whatsapp" 
+                        name="whatsapp"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                        required
+                        inputMode="tel"
+                        className="w-full bg-transparent px-3 sm:px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none text-sm sm:text-base"
+                        placeholder={
+                          COUNTRY_CODES.find((c) => c.code === countryCode)?.placeholder || "Phone number"
+                        }
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-400">
+                      Select your country code or enter with country code (e.g., +1 for US/Canada, +44 for UK, +971 for UAE).
+                    </p>
                   </div>
                 </div>
                 
