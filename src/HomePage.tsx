@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ArrowLeft, MessageSquare, Phone, Mail, MapPin, X, Instagram, Linkedin, Facebook, Globe } from 'lucide-react';
+import { ArrowRight, ArrowLeft, MessageSquare, Phone, Mail, MapPin, X, Instagram, Linkedin, Facebook, Globe, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { GrowNexLogo } from './components/GrowNexLogo';
+import PortfolioSection from './components/PortfolioSection';
 
 const getAssetURL = (path: string) => {
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -47,6 +48,8 @@ export default function HomePage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [countryCode, setCountryCode] = useState<string>("+91");
   const [whatsappNumber, setWhatsappNumber] = useState<string>("");
+  const [selectedServiceInForm, setSelectedServiceInForm] = useState<string>("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const onFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -95,6 +98,7 @@ export default function HomePage() {
         formElement.reset();
         setCountryCode("+91");
         setWhatsappNumber("");
+        setSelectedServiceInForm("");
         setTimeout(() => setFormStatus("idle"), 5000);
       } else {
         console.error("Web3Forms Error:", data);
@@ -282,8 +286,145 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-brand-black text-white font-sans overflow-x-hidden">
+      {/* Top Sticky Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/85 backdrop-blur-md border-b border-white/10 transition-all">
+        <div className="max-w-7xl mx-auto px-6 md:px-16 h-20 flex items-center justify-between">
+          <a href="#" className="flex items-center gap-2 group">
+            <img 
+              src={getAssetURL("/Grow_Nex_Logo.png")} 
+              alt="GrowNex Logo" 
+              className="h-12 md:h-14 object-contain transition-transform group-hover:scale-105" 
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement?.querySelector('.nav-fallback-text')?.classList.remove('hidden');
+              }}
+            />
+            <span className="nav-fallback-text hidden text-2xl font-black tracking-tight">
+              Grow<span className="text-brand-orange">Nex</span>
+            </span>
+          </a>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden lg:flex items-center gap-8 text-sm font-semibold text-gray-300">
+            <a href="#about" className="hover:text-brand-orange transition-colors">About</a>
+            <a href="#services" className="hover:text-brand-orange transition-colors">Services</a>
+            <a 
+              href="#portfolio" 
+              className="text-white hover:text-brand-orange transition-colors flex items-center gap-1.5"
+            >
+              <span>Portfolio</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+            </a>
+            <a href="#offerings" className="hover:text-brand-orange transition-colors">Why GrowNex</a>
+            <a href="#reviews" className="hover:text-brand-orange transition-colors">Reviews</a>
+            <a href="#contact" className="hover:text-brand-orange transition-colors">Contact</a>
+          </div>
+
+          {/* Action Button & Mobile Menu Toggle */}
+          <div className="flex items-center gap-4">
+            <a 
+              href="#send-message"
+              onClick={(e) => {
+                e.preventDefault();
+                const formSection = document.getElementById("send-message");
+                if (formSection) {
+                  formSection.scrollIntoView({ behavior: "smooth" });
+                  const nameInput = document.getElementById("name");
+                  if (nameInput) nameInput.focus();
+                }
+              }}
+              className="hidden sm:inline-flex bg-brand-orange hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-full text-xs uppercase tracking-wider transition-all shadow-md shadow-brand-orange/20 cursor-pointer"
+            >
+              Enquire Now
+            </a>
+
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors cursor-pointer"
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-zinc-950/95 border-b border-white/10 px-6 py-6 space-y-4"
+            >
+              <a 
+                href="#about" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-gray-300 hover:text-brand-orange font-semibold py-1"
+              >
+                About
+              </a>
+              <a 
+                href="#services" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-gray-300 hover:text-brand-orange font-semibold py-1"
+              >
+                Services
+              </a>
+              <a 
+                href="#portfolio" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-brand-orange font-bold py-1 flex items-center justify-between"
+              >
+                <span>Our Portfolio</span>
+                <span className="text-xs bg-brand-orange/20 text-brand-orange px-2 py-0.5 rounded-full">Featured</span>
+              </a>
+              <a 
+                href="#offerings" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-gray-300 hover:text-brand-orange font-semibold py-1"
+              >
+                Why GrowNex
+              </a>
+              <a 
+                href="#reviews" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-gray-300 hover:text-brand-orange font-semibold py-1"
+              >
+                Reviews
+              </a>
+              <a 
+                href="#contact" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-gray-300 hover:text-brand-orange font-semibold py-1"
+              >
+                Contact
+              </a>
+              <div className="pt-2">
+                <a 
+                  href="#send-message"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    const formSection = document.getElementById("send-message");
+                    if (formSection) {
+                      formSection.scrollIntoView({ behavior: "smooth" });
+                      const nameInput = document.getElementById("name");
+                      if (nameInput) nameInput.focus();
+                    }
+                  }}
+                  className="w-full text-center block bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full text-xs uppercase tracking-wider transition-all"
+                >
+                  Enquire Now
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
       {/* Header / Hero */}
-      <header className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden">
+      <header className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden pt-20">
         {/* Tablet strictly top-center logo */}
         <div className="hidden md:flex lg:hidden absolute top-8 left-0 w-full justify-center z-30">
           <motion.div 
@@ -416,7 +557,7 @@ export default function HomePage() {
       </div>
 
       {/* About Section */}
-      <section className="py-24 max-w-7xl mx-auto px-6 md:px-16 flex flex-col md:flex-row gap-16 items-center">
+      <section id="about" className="py-24 max-w-7xl mx-auto px-6 md:px-16 flex flex-col md:flex-row gap-16 items-center scroll-mt-20">
         <AnimatePresence mode="wait">
           <motion.div 
             key={activeAboutSlide}
@@ -456,7 +597,7 @@ export default function HomePage() {
       </section>
 
       {/* Services Section */}
-      <section className="py-24 bg-brand-orange">
+      <section id="services" className="py-24 bg-brand-orange scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6 md:px-16">
           <h3 className="text-center text-4xl font-black text-white mb-16">Explore Our Services</h3>
           
@@ -526,8 +667,14 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
+      {/* Our Portfolio Section */}
+      <PortfolioSection 
+        getAssetURL={getAssetURL} 
+        onSelectServiceForInquiry={(serviceId) => setSelectedServiceInForm(serviceId)} 
+      />
+
       {/* Offerings Section */}
-      <section className="py-24 max-w-7xl mx-auto px-6 md:px-16">
+      <section id="offerings" className="py-24 max-w-7xl mx-auto px-6 md:px-16 scroll-mt-20">
         <h3 className="text-center text-4xl font-black mb-16">How can I help you?</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -588,7 +735,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-brand-orange">
+      <section id="reviews" className="py-24 bg-brand-orange scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6 md:px-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <h3 className="text-3xl md:text-4xl font-black text-white">Clients Feedback</h3>
@@ -804,6 +951,8 @@ export default function HomePage() {
                   <select 
                     id="service"
                     name="service"
+                    value={selectedServiceInForm}
+                    onChange={(e) => setSelectedServiceInForm(e.target.value)}
                     required
                     className="w-full bg-zinc-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-orange/50 transition-all appearance-none"
                   >
@@ -864,7 +1013,8 @@ export default function HomePage() {
             />
             <span className="text-gray-500 text-sm ml-4">© {new Date().getFullYear()} All rights reserved.</span>
           </div>
-          <div className="flex gap-8">
+          <div className="flex flex-wrap items-center gap-6 sm:gap-8">
+            <a href="#portfolio" className="text-gray-400 hover:text-brand-orange text-sm font-medium transition-colors">Our Portfolio</a>
             <Link to="/privacy-policy" className="text-gray-500 hover:text-brand-orange text-sm font-medium transition-colors">Privacy Policy</Link>
             <div className="flex gap-4 ml-4 pl-4 border-l border-white/10 items-center">
               <a href="#" className="text-gray-500 hover:text-brand-orange transition-colors">
